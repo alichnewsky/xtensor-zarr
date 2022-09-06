@@ -189,44 +189,51 @@ if(XTENSOR_ZARR_ENABLE_ZLIB)
     )
 endif()
 
+option(XTENSOR_ZARR_ENABLE_GOOGLE_CLOUD_STORAGE "Enable Google Cloud Storage IO" OFF)
+if(XTENSOR_ZARR_ENABLE_GOOGLE_CLOUD_STORAGE)
 find_package(storage_client)
 message(STATUS "Trying to find Google Cloud Storage for GCS IO handler support")
-if(${storage_client_FOUND})
-    message(STATUS "storage_client ${storage_client_VERSION} found, GCS IO handler support enabled")
-    target_include_directories(xtensor-zarr
-        INTERFACE
-        ${storage_client_INCLUDE_DIRS}
-    )
-    target_link_libraries(xtensor-zarr
-        INTERFACE
-        storage_client
-    )
-else()
-    message(WARNING "Google Cloud Storage not found - install google-cloud-cpp for GCS IO handler support")
+    if(${storage_client_FOUND})
+        message(STATUS "storage_client ${storage_client_VERSION} found, GCS IO handler support enabled")
+        target_include_directories(xtensor-zarr
+            INTERFACE
+            ${storage_client_INCLUDE_DIRS}
+        )
+        target_link_libraries(xtensor-zarr
+            INTERFACE
+            storage_client
+        )
+    else()
+        message(WARNING "Google Cloud Storage not found - install google-cloud-cpp for GCS IO handler support")
+    endif()
 endif()
 
-if (NOT DEFINED BUILD_SHARED_LIBS)
-  set (BUILD_SHARED_LIBS ON)
-  find_package(AWSSDK COMPONENTS s3)
-  unset (BUILD_SHARED_LIBS)
-else ()
-  find_package(AWSSDK COMPONENTS s3)
-endif ()
-message(STATUS "Trying to find AWS SDK for AWS S3 IO handler support")
-if(${AWSSDK_FOUND})
-  message(STATUS "AWSSDK ${AWSSDK_VERSION} found, AWS S3 IO handler support enabled")
-  target_include_directories(xtensor-zarr
-      INTERFACE
-      ${AWSSDK_INCLUDE_DIRS}
-  )
-  target_link_libraries(xtensor-zarr
-      INTERFACE
-      ${AWSSDK_LINK_LIBRARIES}
-  )
-else()
-  message(WARNING "AWSSDK not found - install aws-sdk-cpp for AWS S3 IO handler support")
+# mostly, if the config package for s3 has a bug, I don't want to include it.
+option(XTENSOR_ZARR_ENABLE_AWS_S3 "Enable AWS S3 IO" OFF)
+if(XTENSOR_ZARR_ENABLE_AWS_S3)
+    if (NOT DEFINED BUILD_SHARED_LIBS)
+      set (BUILD_SHARED_LIBS ON)
+      find_package(AWSSDK COMPONENTS s3)
+      unset (BUILD_SHARED_LIBS)
+    else ()
+      find_package(AWSSDK COMPONENTS s3)
+    endif ()
+    message(STATUS "Trying to find AWS SDK for AWS S3 IO handler support")
+    if(${AWSSDK_FOUND})
+      message(STATUS "AWSSDK ${AWSSDK_VERSION} found, AWS S3 IO handler support enabled")
+      target_include_directories(xtensor-zarr
+          INTERFACE
+          ${AWSSDK_INCLUDE_DIRS}
+      )
+      target_link_libraries(xtensor-zarr
+          INTERFACE
+          ${AWSSDK_LINK_LIBRARIES}
+      )
+    else()
+      message(WARNING "AWSSDK not found - install aws-sdk-cpp for AWS S3 IO handler support")
+    endif()
+    message(STATUS "AWSSDK_LINK_LIBRARIES ${AWSSDK_LINK_LIBRARIES}")
 endif()
-message(STATUS "AWSSDK_LINK_LIBRARIES ${AWSSDK_LINK_LIBRARIES}")
 
 if(DOWNLOAD_GTEST OR GTEST_SRC_DIR)
     set(BUILD_TESTS ON)
