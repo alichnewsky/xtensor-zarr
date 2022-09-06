@@ -32,7 +32,7 @@ int main(int32_t argc, char **argv) {
   o.fill_value = 6.6;
   {
     xt::zarray z = h.create_array("/arthur/dent", shape, chunk_shape, "<f8", o);
-    auto chunked_array = z.as_chunked_array();
+    auto const & chunked_array = z.as_chunked_array();
 
   }
   xt::zarray z = h.get_array("/arthur/dent");
