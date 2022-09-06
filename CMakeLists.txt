@@ -335,8 +335,8 @@ macro(xtensor_zarr_create_target source target_name linkage output_name)
 endmacro()
 
 set (xtensor_zarr_targets "")
-if (XTENSOR_ZARR_BUILD_SHARED_LIBS)
-    xtensor_zarr_create_target(${XTENSOR_ZARR_GDAL_SOURCE} xtensor-zarr-gdal SHARED xtensor-zarr-gdal)
+if (XTENSOR_ZARR_BUILD_SHARED_LIBS AND XTENSOR_ZARR_ENABLE_GDAL)
+    xtensor_zarr_create_target(${XzTENSOR_ZARR_GDAL_SOURCE} xtensor-zarr-gdal SHARED xtensor-zarr-gdal)
     list(APPEND xtensor_zarr_targets xtensor-zarr-gdal)
 
     target_include_directories(xtensor-zarr-gdal
